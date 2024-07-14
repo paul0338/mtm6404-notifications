@@ -1,13 +1,43 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+import notificationsData from './notifications'
 import reactLogo from './assets/react.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const Notification = ({ id, clearNotification, children }) => {
+  return (
+    <div className="notification-item">
+      <div>{children}</div>
+      <button onClick={() => clearNotification(id)}>Clear</button>
+    </div>
+  )
+}
+
+const NotificationsList = ({ notifications, clearNotification }) => {
+  return (
+    <div className="notification-list">
+      {notifications.map(notification => (
+        <Notification key={notification.id} id={notification.id} clearNotification={clearNotification}>
+          <p><strong>{notification.name}:</strong> {notification.message}</p>
+        </Notification>
+      ))}
+    </div>
+  )
+}
+
+const App = () => {
+  const [notifications, setNotifications] = useState(notificationsData)
+
+  const clearNotification = (id) => {
+    setNotifications(notifications.filter(notification => notification.id !== id))
+  }
+
+  const clearAllNotifications = () => {
+    setNotifications([])
+  }
 
   return (
-    <div className="App">
-      <div>
+    <div className="app">
+      <div className="logos">
         <a href="https://vitejs.dev" target="_blank">
           <img src="/vite.svg" className="logo" alt="Vite logo" />
         </a>
@@ -15,18 +45,9 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Notifications ({notifications.length})</h1>
+      <button onClick={clearAllNotifications}>Clear All</button>
+      <NotificationsList notifications={notifications} clearNotification={clearNotification} />
     </div>
   )
 }
